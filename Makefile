@@ -1,10 +1,11 @@
-all: main.out
+.PHONY: clean
 
-main.out: main.o
-	gcc main.o -o main.out -lSDL2
+OBJS = main.o
+
+main.exe: $(OBJS)
+	gcc $(OBJS) -lfreeglut -lopengl32 -lglu32 -o main.exe
 
 main.o: main.c
-	gcc -c main.c -o main.o
 
 clean:
-	rm *.o*
+	rm *.o main.exe
