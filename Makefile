@@ -1,11 +1,15 @@
 .PHONY: clean
 
+TARGET = freeshooter
+
 OBJS = main.o
 
-main.exe: $(OBJS)
-	gcc $(OBJS) -lfreeglut -lopengl32 -lglu32 -o main.exe
+LIBS = -lGL -lGLU -lglfw -lGLEW -lX11 -lpthread -lXrandr -lXi
+
+$(TARGET): $(OBJS)
+	gcc -o $(TARGET) $(OBJS) $(LIBS)
 
 main.o: main.c
 
 clean:
-	rm *.o main.exe
+	rm $(OBJS) $(TARGET)

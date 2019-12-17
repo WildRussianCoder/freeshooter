@@ -1,37 +1,72 @@
-#include "../../include/GL/freeglut.h"
-#include "../../include/GL/gl.h"
-#include "../../include/GL/glu.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <stdio.h>
 
-void init ();
-void render ();
+GLfloat vertices[] = {
+	-0.5, -0.5, 0.0,
+	 0.5, -0.5, 0.0,
+	 0.0,  0.5, 0,0
+};
 
-int main (int argc, char** argv)
+
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+
+int main(int argc, char** argv)
 {
-	glutInit (&argc, argv);
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowPosition (0, 0);
-	glutInitWindowSize (640, 480);
-	glutCreateWindow ("Freeshooter");
+	GLFWwindow* window = NULL;
 
-	init ();
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	glutDisplayFunc (render);
+	window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	if (window == NULL) {
+		printf("!glfwCreateWindow()\n");
+		glfwTerminate();
+		return -1;
+	}
 
-	glutMainLoop ();
+	glfwMakeContextCurrent(window);
+
+	glewExperimental = GL_TRUE;
+	if (glewInit() != GLEW_OK) {
+		printf("!glewInit()\n");
+		glfwTerminate();
+		return -1;
+	}
+
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+
+	glViewport(0, 0, width, height);
+
+	glfwSetKeyCallback(window, key_callback);
+
+	glClearColor(0.2, 0.2, 0.3, 1.0);
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glfwSwapBuffers(window);
+	}
+
+	glfwTerminate();
+	return 0;
 }
 
-void init ()
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	glClearColor (1.0, 1.0, 1.0, 1.0);
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity ();
-	gluOrtho2D (0, 639, 0, 479);
-	glMatrixMode (GL_MODELVIEW);
-}
-
-void render ()
-{
-	glClear (GL_COLOR_BUFFER_BIT);
-
-	glutSwapBuffers ();
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
 }
